@@ -3,11 +3,9 @@
 -- This is so that our tests, and application, are always operating from a fresh
 -- database state, and that tests don't interfere with each other.
 
--- First, we must delete (drop) all our tables
+-- Create orders table
 DROP TABLE IF EXISTS orders CASCADE;
 DROP SEQUENCE IF EXISTS orders_id_seq;
-
--- Then, we recreate them (table without the foreign key first)
 CREATE SEQUENCE IF NOT EXISTS orders_id_seq;
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
@@ -15,25 +13,36 @@ CREATE TABLE orders (
     order_date text
 );
 
--- Finally, we add any records that are needed for the tests to run
-INSERT INTO orders (customer_name, order_date) VALUES ('Aang', '1870-08-01');
-INSERT INTO orders (customer_name, order_date) VALUES ('Katara', '1870-06-01');
-
-
--- Then create the table with the foreign key second.
+-- Create items table
 DROP TABLE IF EXISTS items CASCADE;
 DROP SEQUENCE IF EXISTS items_id_seq;
-
+CREATE SEQUENCE IF NOT EXISTS items_id_seq;
 CREATE TABLE items (
     id SERIAL PRIMARY KEY,
     name text,
     unit_price int,
-    quantity int,
-    order_id int, 
-    constraint fk_order foreign key(order_id)
-    references "orders"(id)
-    on delete cascade
+    quantity int 
 );
 
-INSERT INTO items (name, unit_price, quantity, order_id) VALUES ('air bison whistle', 5, 1, 1);
-INSERT INTO items (name, unit_price, quantity, order_id) VALUES ('waterbending scroll', 50, 1, 2);
+-- Create relationships table
+DROP TABLE IF EXISTS items_orders CASCADE;
+CREATE TABLE items_orders (
+    item_id int,
+    order_id int,
+    -- TODO: Allow multiple of an item in an order.
+    constraint fk_item foreign key(item_id) references items(id) ON DELETE CASCADE,
+    constraint fk_order foreign key(order_id) references orders(id) ON DELETE CASCADE,
+    PRIMARY KEY (item_id, order_id)
+);
+
+-- Add items
+INSERT INTO items (name, unit_price, quantity) VALUES ('air bison whistle', 5, 1);
+INSERT INTO items (name, unit_price, quantity) VALUES ('waterbending scroll', 50, 1);
+
+-- Add metadata for each order
+INSERT INTO orders (customer_name, order_date) VALUES ('Aang', '1870-08-01');
+INSERT INTO orders (customer_name, order_date) VALUES ('Katara', '1870-06-01');
+
+-- Add which items are in each order
+INSERT INTO items_orders (item_id, order_id) VALUES (1, 1);
+INSERT INTO items_orders (item_id, order_id) VALUES (2, 2);
