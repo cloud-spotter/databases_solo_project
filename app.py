@@ -61,7 +61,7 @@ def run():
         
         item_repository = ItemRepository(connection)
         item_repository.create(Item(None, new_item_name, new_item_unit_price, new_item_quantity))
-        print(item_repository.all())  #THIS DOESN'T 
+        print(item_repository.all())
     else:
         raise NotImplementedError(
             f'Action #{management_action} Not yet implemented.')
