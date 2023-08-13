@@ -45,14 +45,16 @@ def run():
         3 = list all orders
         4 = create a new order
         Enter choice: ''')
+    management_action = int(management_action)
+    print('***********\n\n')
 
-    if int(management_action) == 1:
+    if management_action == 1:
         print("Shop items: ")
         items = ItemRepository(connection).all()
         for item in items:
             print(f"Item {item.id}: {item.name}, unit price: {item.unit_price}, quantity: {item.quantity}")
 
-    elif int(management_action) == 2:
+    elif management_action == 2:
         new_item_name = input("Enter item name: ")
         new_item_unit_price = input("Enter item unit price: ")
         new_item_quantity = input("Enter item quantity: ")
@@ -60,15 +62,13 @@ def run():
         item_repository = ItemRepository(connection)
         item_repository.create(Item(None, new_item_name, new_item_unit_price, new_item_quantity))
         print(item_repository.all())  #THIS DOESN'T 
-
-    elif
-        
-
-
-
+    else:
+        raise NotImplementedError(
+            f'Action #{management_action} Not yet implemented.')
+    print('\n***********\n')
 
 
 
-
-print(run())
+while True:
+    run()
 
